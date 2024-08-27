@@ -3,23 +3,23 @@ package ru.example.demo.dto;
 import java.util.Objects;
 
 public class User {
-    private Long id;
+    private Integer id;
     private String firstName;
     private String secondName;
     private Integer age;
 
-    public User(Long id, String firstName, String secondName, Integer age) {
+    public User(Integer id, String firstName, String secondName, Integer age) {
         this.id = id;
         this.firstName = firstName;
         this.secondName = secondName;
         this.age = age;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
