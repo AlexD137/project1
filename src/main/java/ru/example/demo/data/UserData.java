@@ -7,17 +7,17 @@ import java.util.Map;
 
 public class UserData {
 
-    private final Map<Long, User> users = new HashMap<>();
-    public Map<Long, User> getUsers() {
+    private static final Map<Integer, User> users = new HashMap<>();
+
+    public static Map<Integer, User> getUsers() {
         return users;
     }
 
-    {
-        users.put(1L, new User( 1L, "Ivan",  "Ivanov",  20) );
-        users.put(2L, new User( 2L, "Ivan1",  "Ivanov1",  21) );
-        users.put(3L, new User( 3L, "Ivan2",  "Ivanov2",  22) );
-        users.put(4L, new User( 4L, "Ivan3",  "Ivanov3",  23) );
-        users.put(5L, new User( 5L, "Ivan4",  "Ivanov4",  25) );
-
+    static {
+        users.put(1, new User(1, "Ivan", "Ivanov", 20));
+        users.put(2, new User(2, "Ivan1", "Ivanov1", 21));
+        users.put(3, new User(3, "Ivan2", "Ivanov2", 22));
+        users.put(4, new User(4, "Ivan3", "Ivanov3", 23));
+        users.put(5, new User(5, "Ivan4", "Ivanov4", 25));
     }
 }
