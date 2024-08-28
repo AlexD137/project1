@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> read() {
+    public ResponseEntity<List<User>> readAll() {
         final List<User> users = userService.readAll();
 
         return users != null && !users.isEmpty()
@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") int id, @RequestBody User user) {
-        final boolean updated = userService.putUpdate(user, id);
+    public ResponseEntity<?> put(@PathVariable(name = "id") int id, @RequestBody User user) {
+        final boolean updated = userService.put(user, id);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)
@@ -53,7 +53,7 @@ public class UserController {
 
     @PatchMapping(value = "/{id}")
     public ResponseEntity<?> patch(@PathVariable(name = "id") int id, @RequestBody User user) {
-        final boolean updated = userService.patchUpdate(user, id);
+        final boolean updated = userService.patch(user, id);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)

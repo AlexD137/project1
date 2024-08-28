@@ -13,9 +13,9 @@ public interface UserService {
 
         User read(int id);
 
-        boolean putUpdate(User user, int id);
+        boolean put(User user, int id);
 
-        boolean patchUpdate(User user, int id);
+        boolean patch(User user, int id);
 
         boolean delete(int id);
     }
