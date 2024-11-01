@@ -7,10 +7,12 @@ import ru.example.demo.dto.User;
 import ru.example.demo.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
 public class UserController {
+
     private final UserService userService;
 
     @Autowired
@@ -19,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody User user) {
+    public ResponseEntity<Void> create(@RequestBody User user) {
         userService.create(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -35,15 +37,14 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<User> read(@PathVariable(name = "id") int id) {
-        final User user = userService.read(id);
+        final Optional<User> userOptional = userService.read(id);
 
-        return user != null
-                ? new ResponseEntity<>(user, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return userOptional.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> put(@PathVariable(name = "id") int id, @RequestBody User user) {
+    public ResponseEntity<Void> put(@PathVariable(name = "id") int id, @RequestBody User user) {
+        user.setId(id);
         final boolean updated = userService.put(user, id);
 
         return updated
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> patch(@PathVariable(name = "id") int id, @RequestBody User user) {
+    public ResponseEntity<Void> patch(@PathVariable(name = "id") int id, @RequestBody User user) {
         final boolean updated = userService.patch(user, id);
 
         return updated
@@ -61,13 +62,13 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
+    public ResponseEntity<Void> delete(@PathVariable(name = "id") int id) {
         final boolean deleted = userService.delete(id);
 
         return deleted
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
-
 }
+
 

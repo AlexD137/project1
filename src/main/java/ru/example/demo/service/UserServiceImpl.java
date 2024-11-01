@@ -1,62 +1,68 @@
 package ru.example.demo.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.example.demo.dto.User;
-import ru.example.demo.data.UserData;
 
-import java.util.ArrayList;
+import ru.example.demo.repository.UserRepository;
+
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Optional;
+
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final AtomicInteger clientIdHolder = new AtomicInteger(UserData.getUsers().size());
+
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
-    public void create(User user) {
-        final int userId = clientIdHolder.incrementAndGet();
-        user.setId(userId);
-        UserData.getUsers().put(userId, user);
+    public User create(User user) {
+        return userRepository.save(user);
     }
 
     @Override
     public List<User> readAll() {
-        return new ArrayList<>(UserData.getUsers().values());
+        return userRepository.findAll();
     }
 
     @Override
-    public User read(int id) {
-        return UserData.getUsers().get(id);
+    public Optional<User> read(int id) {
+        return userRepository.findById(id);
     }
 
     @Override
     public boolean put(User user, int id) {
-        if (UserData.getUsers().containsKey(id)) {
-            user.setId(id);
-            UserData.getUsers().put(id, user);
-            return true;
-        }
+        user.setId(id);
 
-        return false;
+        userRepository.save(user);
+        return true;
+
     }
 
     @Override
     public boolean patch(User user, int id) {
-        if (UserData.getUsers().containsKey(id)) {
-            user.setId(id);
-            User newUser = UserData.getUsers().get(id);
+        Optional<User> existingUserOptional = userRepository.findById(id);
+
+        if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+
             if (user.getFirstName() != null) {
-                newUser.setFirstName(user.getFirstName());
+                existingUser.setFirstName(user.getFirstName());
             }
             if (user.getSecondName() != null) {
-                newUser.setSecondName(user.getSecondName());
+                existingUser.setSecondName(user.getSecondName());
             }
             if (user.getAge() != null) {
-                newUser.setAge(user.getAge());
+                existingUser.setAge(user.getAge());
             }
 
-            UserData.getUsers().put(id, newUser);
+            userRepository.save(existingUser); // Сохраняем обновленного пользователя
             return true;
         }
 
@@ -65,7 +71,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean delete(int id) {
-        return UserData.getUsers().remove(id) != null;
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
 
