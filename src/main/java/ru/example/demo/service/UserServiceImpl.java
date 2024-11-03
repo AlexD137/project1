@@ -2,8 +2,7 @@ package ru.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.example.demo.dto.User;
-
+import ru.example.demo.model.User;
 import ru.example.demo.repository.UserRepository;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -22,8 +20,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(User user) {
-        return userRepository.save(user);
+    public void create(User user) {
+        userRepository.save(user);
     }
 
     @Override
@@ -42,7 +40,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         return true;
-
     }
 
     @Override
@@ -78,4 +75,3 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 }
-

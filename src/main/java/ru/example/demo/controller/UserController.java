@@ -1,51 +1,51 @@
 package ru.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import ru.example.demo.dto.User;
+import ru.example.demo.converter.UserConverter;
+import ru.example.demo.dto.UserDto;
 import ru.example.demo.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("users")
 public class UserController {
 
     private final UserService userService;
+    private final UserConverter userConverter;
 
-    @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserConverter userConverter) {
         this.userService = userService;
+        this.userConverter = userConverter;
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody User user) {
-        userService.create(user);
+    public ResponseEntity<Void> create(@RequestBody UserDto userDto) {
+        userService.create(userConverter.toModel(userDto));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> readAll() {
-        final List<User> users = userService.readAll();
+    public ResponseEntity<List<UserDto>> readAll() {
+        final List<UserDto> users = userService.readAll().stream().map(userConverter::toDto).toList();
 
-        return users != null && !users.isEmpty()
+        return !users.isEmpty()
                 ? new ResponseEntity<>(users, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> read(@PathVariable(name = "id") int id) {
-        final Optional<User> userOptional = userService.read(id);
-
-        return userOptional.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<UserDto> read(@PathVariable(name = "id") int id) {
+        return userService.read(id)
+                .map(user -> new ResponseEntity<>(userConverter.toDto(user), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> put(@PathVariable(name = "id") int id, @RequestBody User user) {
-        user.setId(id);
-        final boolean updated = userService.put(user, id);
+    public ResponseEntity<Void> put(@PathVariable(name = "id") int id, @RequestBody UserDto userDto) {
+        final boolean updated = userService.put(userConverter.toModel(userDto), id);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)
@@ -53,8 +53,8 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Void> patch(@PathVariable(name = "id") int id, @RequestBody User user) {
-        final boolean updated = userService.patch(user, id);
+    public ResponseEntity<Void> patch(@PathVariable(name = "id") int id, @RequestBody UserDto userDto) {
+        final boolean updated = userService.patch(userConverter.toModel(userDto), id);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)
@@ -70,5 +70,3 @@ public class UserController {
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 }
-
-
